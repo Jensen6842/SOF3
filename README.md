@@ -7,3 +7,4 @@ Covers a range of functional-programming techniques, type classes, and testing t
 ## Credits
 Jensen Bradshaw https://github.com/Jensen6842 <br />
 Dr Kofi Appiah
+Dr Jeremy Jacob
