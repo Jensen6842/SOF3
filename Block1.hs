@@ -122,9 +122,9 @@ greetTest' = map gt [("Kofi", "Hello Kofi!"), ("Jeremy", "Hello Jeremy!"), ("", 
 -- A function that outputs the index of a given element
 pos :: Eq a => a -> [a] -> Int
 pos x = posx 0
-  where
-    posx n (y:ys) | x == y    = n
-                  | otherwise = posx (n+1) ys
+      where
+        posx n (y:ys) | x == y    = n
+                      | otherwise = posx (n+1) ys
 
 posTest :: Bool
 posTest =
@@ -134,10 +134,10 @@ posTest =
 -- A function that inserts a value into an ordered list.
 insert :: Ord a => a -> [a] -> [a]
 insert x = insx
-  where
-    insx [] = [x]
-    insx ys@(z:zs) | x <= z    = x : ys
-                   | otherwise = z : insx zs
+         where
+           insx [] = [x]
+           insx ys@(z:zs) | x <= z    = x : ys
+                          | otherwise = z : insx zs
 
 insertTest :: Bool
 insertTest =
@@ -158,9 +158,9 @@ isortTest =
 -- A fold function that inserts a value into an ordered list.
 insert' :: Ord a => a -> [a] -> [a]
 insert' x = foldr insx [x]
-  where
-    insx y ys@(z:zs) | z == x && x < y = z:y:zs
-                     | otherwise       = y:ys
+          where
+            insx y ys@(z:zs) | z == x && x < y = z:y:zs
+                             | otherwise       = y:ys
 
 insert'Test :: Bool
 insert'Test =
@@ -218,37 +218,69 @@ smvTest =
 
 -- A function that implements the addition of vectors.
 (/+/) :: Vector -> Vector -> Vector
-(/+/) = undefined
+(/+/) = zipWith (+)
 
-(/+/)Test :: Bool
-(/+/)Test = undefined
+avTest :: Bool
+avTest =
+  [1,2,3] /+/ [3,1,2] == [4,3,5]
 
 -- A function that implements a unit vector for (/+/)
 zeroV :: Vector
 zeroV = repeat 0
 
-zeroVTest :: Bool
-zeroVTest = undefined
-
 -- A function that sums a list of vectors.
 sumV :: [Vector] -> Vector
-sumV = undefined
+sumV = foldr (/+/) zeroV
 
 sumVTest :: Bool
-sumVTest = undefined
+sumVTest =
+  sumV [[1,2],[2,3],[3,1]] == [6,6]
 
 -- A function that implements zipWith using explicit recursion.
 zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]
-zipWith' = undefined
+zipWith' f = zwf
+           where
+             zwf _      []     = []
+             zwf []     _      = []
+             zwf (x:xs) (y:ys) = f x y : zwf xs ys
 
 zipWith'Test :: Bool
-zipWith'Test = undefined
+zipWith'Test =
+  zipWith' (+) [1,1] [1,1] == [2,2]
 
 -- A function that merges two ordered lists.
 merge :: Ord a => [a] -> [a] -> [a]
-merge = undefined
+merge xs         []         = xs
+merge []         ys         = ys
+merge xs@(x:xs') ys@(y:ys') | x < y     = x : merge xs' ys
+                            | otherwise = y : merge xs ys'
 
 mergeTest :: Bool
-mergeTest = undefined
+mergeTest =
+  merge [1,3,4] [2,5,6] == [1,2,3,4,5,6]
 
--- 6.15
+-- A function that checks when the parameter is ordered.
+isOrdered :: Ord a => [a] -> Bool
+isOrdered [] = True
+isOrdered xs = and (zipWith (>=) (tail xs) xs)
+
+isOrderedTest :: Bool
+isOrderedTest =
+  isOrdered [1,2,3]
+
+-- A function that checks if all elements of a list are in another list.
+
+something_ish :: Eq a => [a] -> [a] -> Bool
+something_ish pattern source = all (`elem` source) pattern
+
+something_ishTest :: Bool
+something_ishTest =
+  something_ish [1,2] [5,2,5,1,1,4]
+
+-- A function that checks if all elements of "elf" are in another list.
+elfish :: String -> Bool
+elfish = something_ish "elf"
+
+elfishTest :: Bool
+elfishTest =
+  elfish "eufwql"
